@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>betascope — the cooling diagram</title>
+    <script type="module" crossorigin src="./assets/index-CdOYZh-H.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B8bZZMLu.css">
+  </head>
+  <body>
+    <header>
+      <h1>betascope <span class="tag">v0.1 dev preview</span></h1>
+      <nav id="tabs">
+        <button data-view="calc">Cooling times</button>
+        <button data-view="diagram">Cooling diagram</button>
+        <button data-view="moving">Moving shadows</button>
+        <button data-view="retrieve">Retrieval</button>
+        <button data-view="sky">Sky view</button>
+        <button data-view="gallery">Paper figures</button>
+      </nav>
+    </header>
+    <main id="main">
+      <section id="gallery" class="panel full" data-for="gallery">
+        <h2>Paper II, Fig. 4 — parameter-space survey on the cooling diagram (recomputed in your browser)</h2>
+        <p class="def">Computed live by the web engine, which matches the figure notebook (<code>figure_cooling_phase_quad.ipynb</code>) to 1×10<sup>−6</sup> on its full survey grid. Colours: one footprint per Σ<sub>g,50</sub> over a<sub>S</sub> × R at ρ<sub>g</sub>/ρ<sub>d</sub> = 100 (surface at z = 3 H<sub>g</sub>); dashed: the full survey. Diamonds: the fiducial disk at 50 au.</p>
+        <div id="fig4"><p class="def">Loading DSHARP opacities…</p></div>
+      </section>
+      <section id="controls" class="panel" data-hide="gallery">
+        <div data-for="calc">
+          <h2>Layer</h2>
+          <div class="seg" id="cLayerSeg">
+            <button data-pick="midplane">Midplane<small>vertically integrated column</small></button>
+            <button data-pick="surface">Surface<small>irradiated layer, local</small></button>
+          </div>
+
+          <div class="calc-cols">
+            <div>
+              <h2>Preset</h2>
+              <select id="preset" class="wide"></select>
+              <p class="def" id="presetNote"></p>
+            </div>
+            <div>
+              <h2>Star</h2>
+              <label><span>M<sub>★</sub> [M<sub>☉</sub>]</span> <input id="cM" type="number" step="any" /></label>
+              <label data-layer="midplane"><span>L<sub>★</sub> [L<sub>☉</sub>]</span> <input id="cL" type="number" step="any" /></label>
+              <label data-layer="surface"><span>T<sub>★</sub> [K]</span> <input id="cT" type="number" step="any" /></label>
+              <label data-layer="surface"><span>R<sub>★</sub> [R<sub>☉</sub>]</span> <input id="cRs" type="number" step="any" /></label>
+              <p class="def" id="rsHint"></p>
+            </div>
+
+            <div>
+              <h2>Gas disk</h2>
+              <label><span>radius R [au]</span> <input id="cR" type="number" step="any" /></label>
+              <input id="cRS" type="range" min="0" max="2.5" step="0.01" />
+              <label><span>Σ<sub>g</sub> at R [g cm<sup>−2</sup>]</span> <input id="cSigma" type="number" step="any" /></label>
+              <input id="cSigmaS" type="range" min="-2" max="3" step="0.01" />
+              <label data-layer="midplane"><span>Σ<sub>g</sub>/Σ<sub>d</sub></span> <input id="cGdMid" type="number" step="any" /></label>
+              <label data-layer="surface"><span>local ρ<sub>g</sub>/ρ<sub>d</sub></span> <input id="cGdSurf" type="number" step="any" /></label>
+              <p class="def" id="sigmaHint"></p>
+            </div>
+            <div>
+              <h2>Dust (Sauter-mean size)</h2>
+              <label data-layer="midplane"><span>a<sub>S</sub><sup>(Σ)</sup> of the column [µm]</span> <input id="cAMid" type="number" step="any" /></label>
+              <input data-layer="midplane" id="cAMidS" type="range" min="-1" max="4" step="0.01" />
+              <label data-layer="surface"><span>a<sub>S</sub> at the surface [µm]</span> <input id="cASurf" type="number" step="any" /></label>
+              <input data-layer="surface" id="cASurfS" type="range" min="-1" max="2" step="0.01" />
+              <p class="def" id="amaxHint"></p>
+            </div>
+          </div>
+
+          <details open>
+            <summary>Vertical structure and gas</summary>
+            <div class="calc-cols">
+              <div>
+                <label data-layer="surface"><span>surface height z/H<sub>g</sub></span> <input id="cZ" type="number" step="any" /></label>
+                <label data-layer="midplane"><span>dust scale height H<sub>d</sub>/H<sub>g</sub></span> <input id="cHd" type="number" step="any" /></label>
+                <label data-layer="midplane"><span>photosphere χ = H<sub>ph</sub>/H<sub>g</sub></span> <input id="cChi" type="number" step="any" /></label>
+              </div>
+              <div>
+                <label><span>μ</span> <input id="cMu" type="number" step="any" /></label>
+                <label><span>γ<sub>g</sub></span> <input id="cGamma" type="number" step="any" /></label>
+                <label><span>accommodation ᾱ<sub>T</sub></span> <input id="cAlpha" type="number" step="any" /></label>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <div data-for="retrieve">
+          <h2>Layer</h2>
+          <div class="seg" id="rLayerSeg">
+            <button data-pick="midplane">Midplane<small>e.g. optically thick mm continuum, rare CO isotopologues</small></button>
+            <button data-pick="surface">Surface<small>e.g. mid-IR dust emission, <sup>12</sup>CO</small></button>
+          </div>
+          <div class="calc-cols">
+            <div>
+              <h2>Preset</h2>
+              <select id="rPreset" class="wide"></select>
+              <p class="def" id="rPresetNote"></p>
+            </div>
+            <div>
+              <h2>Star and ring</h2>
+              <label><span>M<sub>★</sub> [M<sub>☉</sub>]</span> <input id="rM" type="number" step="any" /></label>
+              <label><span>L<sub>★</sub> [L<sub>☉</sub>]</span> <input id="rL" type="number" step="any" /></label>
+              <label data-rlayer="surface"><span>T<sub>★</sub> [K]</span> <input id="rT" type="number" step="any" /></label>
+              <label data-rlayer="surface"><span>R<sub>★</sub> [R<sub>☉</sub>]</span> <input id="rRs" type="number" step="any" /></label>
+              <label><span>ring radius R [au]</span> <input id="rR" type="number" step="any" /></label>
+            </div>
+            <div>
+              <h2>Shadow motion</h2>
+              <label><span>shadow phase change Δφ<sub>s</sub> [°]</span> <input id="rDphiS" type="number" step="any" /></label>
+              <label><span>between epochs Δt [yr]</span> <input id="rDt" type="number" step="any" /></label>
+              <label><span>mode m</span> <select id="rm"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+              <p class="def">Δφ<sub>s</sub> &gt; 0 along rotation (prograde); 0 for a stationary shadow.</p>
+            </div>
+            <div>
+              <h2>Measured lags at this layer [°]</h2>
+              <label><span><input id="rUseDust" type="checkbox" /> dust Δφ<sub>d</sub></span> <input id="rDnom" type="number" step="any" /></label>
+              <label><span>dust range</span> <span class="pair"><input id="rDlo" type="number" step="any" /><input id="rDhi" type="number" step="any" /></span></label>
+              <label><span><input id="rUseGas" type="checkbox" /> gas Δφ<sub>g</sub></span> <input id="rGnom" type="number" step="any" /></label>
+              <label><span>gas range</span> <span class="pair"><input id="rGlo" type="number" step="any" /><input id="rGhi" type="number" step="any" /></span></label>
+              <label><span>amplitude threshold [%]</span> <input id="rAmp" type="number" step="any" /></label>
+              <p class="def">Fourier phases of mode m relative to the scattered-light shadow (Paper I §6.1); positive = lag along rotation. Both tracers must probe the chosen layer.</p>
+            </div>
+          </div>
+          <details open>
+            <summary>Model for the (a<sub>S</sub>, Σ<sub>g</sub>) mapping</summary>
+            <div class="calc-cols">
+              <div>
+                <label><span data-rlayer="midplane">Σ<sub>g</sub>/Σ<sub>d</sub></span><span data-rlayer="surface">local ρ<sub>g</sub>/ρ<sub>d</sub></span> <input id="rGd" type="number" step="any" /></label>
+                <label data-rlayer="midplane"><span>H<sub>d</sub>/H<sub>g</sub></span> <input id="rHd" type="number" step="any" /></label>
+                <label data-rlayer="surface"><span>surface height z/H<sub>g</sub></span> <input id="rZ" type="number" step="any" /></label>
+              </div>
+              <div>
+                <label><span>χ = H<sub>ph</sub>/H<sub>g</sub></span> <input id="rChi" type="number" step="any" /></label>
+                <label><span>a<sub>min</sub> [µm]</span> <input id="rAmin" type="number" step="any" /></label>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <div data-for="sky">
+          <h2>Preset</h2>
+          <select id="sPreset" class="wide"></select>
+          <p class="def" id="sPresetNote"></p>
+          <h2>Cooling times (gas side)</h2>
+          <label><span>β<sub>coll,g</sub></span> <input id="sBColl" type="number" step="any" /></label>
+          <input id="sBCollS" type="range" min="-3" max="3" step="0.01" />
+          <label><span>β<sub>cont,g</sub></span> <input id="sBCont" type="number" step="any" /></label>
+          <input id="sBContS" type="range" min="-3" max="3" step="0.01" />
+          <p class="def">Disk-frame values (e.g. from the Cooling times tab). A moving shadow uses β′ = β(1 − Ω<sub>s</sub>/Ω).</p>
+          <h2>Shadow motion</h2>
+          <label><span>M<sub>★</sub> [M<sub>☉</sub>]</span> <input id="sMs" type="number" step="any" /></label>
+          <label><span>Ω<sub>s</sub>/Ω (signed)</span> <input id="sRatio" type="number" step="any" /></label>
+          <input id="sRatioS" type="range" min="-2" max="2" step="0.01" />
+          <label><span>Ω<sub>s</sub> [°/yr]</span> <input id="sOs" type="number" step="any" /></label>
+          <p class="def" id="sMotionInfo"></p>
+          <h2>Ring on the sky</h2>
+          <label><span>ring radius R [au]</span> <input id="sR" type="number" step="any" /></label>
+          <label><span>ring width (FWHM) [au]</span> <input id="sW" type="number" step="any" /></label>
+          <label><span>distance [pc]</span> <input id="sD" type="number" step="any" /></label>
+          <label><span>inclination [°]</span> <input id="sInc" type="number" step="any" min="0" max="85" /></label>
+          <label><span>PA of major axis [°]</span> <input id="sPA" type="number" step="any" /></label>
+          <label><span>rotation on the sky</span> <select id="sSense"><option value="1">counter-clockwise (N → E)</option><option value="-1">clockwise (N → W)</option></select></label>
+          <label><span>first lane at φ [°]</span> <input id="sPhi0" type="number" step="any" /></label>
+          <p class="def">φ is the disk azimuth from the major axis (the PA direction), increasing along the rotation.</p>
+          <h2>Beam / PSF</h2>
+          <label><span>FWHM major × minor [″]</span> <span class="pair"><input id="sBmaj" type="number" step="any" /><input id="sBmin" type="number" step="any" /></span></label>
+          <input id="sBeamS" type="range" min="0.005" max="0.8" step="0.005" title="beam major axis; the minor axis keeps the current axis ratio" />
+          <label><span>beam PA [°]</span> <input id="sBpa" type="number" step="any" /></label>
+          <label><span>readout mode m</span> <select id="sM"><option value="0">dominant</option><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+          <p class="def">Brightness ∝ T (Rayleigh–Jeans). Forward modelling only: the retrieval tab uses Fourier phases, which this view shows are insensitive to the beam.</p>
+        </div>
+
+        <div data-for="diagram">
+          <h2>Cooling times (gas side)</h2>
+          <label><span>β<sub>coll,g</sub></span> <input id="bColl" type="number" step="any" /></label>
+          <input id="bCollS" type="range" min="-3" max="7" step="0.01" />
+          <label><span>β<sub>cont,g</sub></span> <input id="bCont" type="number" step="any" /></label>
+          <input id="bContS" type="range" min="-3" max="7" step="0.01" />
+          <p class="def">Stationary shadow (β′ = β). Click anywhere on the diagram.</p>
+        </div>
+
+        <div data-for="moving">
+          <h2>Disk-frame cooling times</h2>
+          <label><span>β<sub>coll,g</sub></span> <input id="mbColl" type="number" step="any" /></label>
+          <label><span>β<sub>cont,g</sub></span> <input id="mbCont" type="number" step="any" /></label>
+          <label><span>radius R [au]</span> <input id="R" type="number" step="any" /></label>
+          <label><span>M<sub>★</sub> [M<sub>☉</sub>]</span> <input id="Ms" type="number" step="any" /></label>
+
+          <h2>Shadow pattern speed</h2>
+          <label><span>direction</span>
+            <select id="dir"><option value="1">prograde (Ω_s &gt; 0)</option><option value="-1">retrograde (Ω_s &lt; 0)</option></select>
+          </label>
+          <label><span>|Ω<sub>s</sub>|/Ω</span> <input id="ratio" type="number" step="any" /></label>
+          <input id="ratioS" type="range" min="-3" max="5" step="0.01" />
+          <label><span>|Ω<sub>s</sub>| [°/yr]</span> <input id="Os" type="number" step="any" /></label>
+          <label><span>period P<sub>s</sub> [yr]</span> <input id="Ps" type="number" step="any" /></label>
+          <p class="def">Ω<sub>s</sub> &gt; 0 (<b>prograde</b>): the shadow turns in the same sense as the disk. Ω<sub>s</sub> &lt; 0 (<b>retrograde</b>): the opposite sense. β′ = β(1 − Ω<sub>s</sub>/Ω), P<sub>s</sub> = 2π/|Ω<sub>s</sub>|. Retrograde shadows keep the stationary lag direction (β′ &gt; β). Prograde shadows faster than the gas (Ω<sub>s</sub> &gt; Ω) give β′ &lt; 0, and the lag reverses. <br><b>On the diagram:</b> hover anywhere (either panel) to preview the 1D curves at that β′; click the upper panel to set the disk-frame β (open diamond); drag the filled diamond along the coloured track, or scroll with the cursor near it, to change Ω<sub>s</sub> — one gesture runs retrograde → stationary → prograde → corotation → overtaking.</p>
+          <p class="def" id="movingInfo"></p>
+        </div>
+
+        <div data-hide="calc retrieve">
+        <h2>Heat capacity → C</h2>
+        <label><span>c<sub>p</sub>/c<sub>d</sub></span> <input id="cpcd" type="number" step="any" /></label>
+        <input id="cpcdS" type="range" min="0" max="6" step="0.01" />
+        <label><span>gas/dust mass ratio</span> <input id="gd" type="number" step="any" /></label>
+        <input id="gdS" type="range" min="0" max="4" step="0.01" />
+        <p class="def" id="Cdef"></p>
+        </div>
+
+        <div data-hide="calc retrieve">
+        <h2>Shadow shape</h2>
+        <label><span>shape</span>
+          <select id="kind"><option value="gaussian">smooth lanes (Gaussian)</option><option value="tophat">sharp lanes (top-hat)</option><option value="sine">pure mode (sinusoid)</option></select>
+        </label>
+        <label><span id="lanesLabel">number of lanes</span> <select id="lanes"><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+        <label id="widthRow"><span>lane width [rad]</span> <input id="width" type="number" step="0.05" /></label>
+        <label><span>depth (1 − transmission)</span> <input id="depth" type="number" step="0.05" min="0" max="0.99" /></label>
+        </div>
+      </section>
+
+      <section id="retCards" class="panel" data-for="retrieve">
+        <div id="retCardsBody"></div>
+        <div id="retCursor" class="cursor-line"></div>
+        <div class="row">
+          <label><span>map field (both plots)</span> <select id="rField">
+            <option value="regime">regime map (A/B/C) + constraints</option>
+            <option value="dphiD">dust shift Δφ_d</option>
+            <option value="dphiG">gas shift Δφ_g</option>
+            <option value="ampD">dust dip depth ΔT_d/ΔT_eq</option>
+            <option value="ampG">gas dip depth ΔT_g/ΔT_eq</option>
+          </select></label>
+        </div>
+      </section>
+
+      <section id="skyRow" class="panel" data-for="sky">
+        <div class="row">
+          <label><span>image</span> <select id="sObs"><option value="1">observed (beam-convolved)</option><option value="0">intrinsic</option></select></label>
+          <label><span>display</span> <select id="sStretch"><option value="temp">temperature along the ring</option><option value="bright">brightness ∝ T</option></select></label>
+          <label><span>field ± [″]</span> <input id="sView" type="number" step="any" min="0" /></label>
+          <input id="sViewS" type="range" min="0.1" max="4" step="0.01" class="inline-range" />
+          <button id="sViewAuto" class="small">auto</button>
+        </div>
+        <div id="skyMap"></div>
+      </section>
+
+      <section id="midPanel" class="panel wide" data-hide="gallery">
+        <div class="row" data-for="diagram">
+          <label><span>map</span> <select id="mapVar">
+            <option value="regime">regime map (Fig. 3)</option>
+            <option value="dphi_d">dust shift Δφ_d</option>
+            <option value="dphi_g">gas shift Δφ_g</option>
+            <option value="dphi_gd">gas − dust shift</option>
+            <option value="amp_d">dust dip depth ΔT_d/ΔT_eq</option>
+            <option value="amp_g">gas dip depth ΔT_g/ΔT_eq</option>
+          </select></label>
+        </div>
+        <div id="diagram" data-hide="sky"></div>
+        <div data-for="sky">
+          <div id="skyProfile"></div>
+          <div id="skyTable"></div>
+        </div>
+        <div data-for="retrieve" class="ret-strip">
+          <div id="stMap"></div>
+          <div id="stReadout"></div>
+        </div>
+        <div data-for="retrieve" id="betaReadout"></div>
+        <div id="movingLegend" class="def" data-for="moving"></div>
+      </section>
+
+      <section id="rightPanel" class="panel wide" data-hide="gallery">
+        <div data-for="retrieve">
+          <div id="physMap"></div>
+          <div id="physReadout"></div>
+        </div>
+        <div data-for="sky">
+          <div id="skyDrift"></div>
+          <div id="skyNote"></div>
+        </div>
+        <div data-for="calc">
+          <div id="calcTable"></div>
+          <div class="actions">
+            <button id="toDiagram">Explore this point in the cooling diagram →</button>
+            <button id="toMoving">Add a moving shadow at this radius →</button>
+            <button id="toSky">Show this point on the sky →</button>
+          </div>
+        </div>
+        <div data-hide="calc retrieve sky">
+          <div id="profile"></div>
+          <label><span>centre the plot on φ =</span> <input id="center" type="range" min="0" max="360" step="5" /> <span id="centerVal"></span></label>
+          <div id="readout"></div>
+        </div>
+      </section>
+      <section id="eqPanel" class="panel full eqpanel">
+        <details id="eqbox" class="eqbox">
+          <summary>Equations used <span class="eq-sub">(Paper I/II; tagged with the LaTeX labels of the manuscripts)</span></summary>
+          <div id="eqBody"></div>
+        </details>
+      </section>
+    </main>
+    <footer>
+      Zhang et al., Thermal Response of Dust and Gas to Shadows in Protoplanetary Disks I &amp; II.
+      Opacities: DSHARP (Birnstiel et al. 2018). Preview build — numbers subject to change.
+    </footer>
+  </body>
+</html>
